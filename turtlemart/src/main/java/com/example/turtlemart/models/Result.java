@@ -2,6 +2,7 @@ package com.example.turtlemart.models;
 
 import lombok.*;
 
+import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -11,5 +12,5 @@ import java.util.Map;
 public class Result {
     private String location_Name;
     private int zip_Code;
-    private Map<String, Double> inventory;
+    private List<Inventory> inventory;
 }
