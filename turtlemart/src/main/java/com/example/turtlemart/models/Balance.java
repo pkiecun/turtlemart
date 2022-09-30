@@ -2,15 +2,22 @@ package com.example.turtlemart.models;
 
 import lombok.*;
 
+import javax.persistence.*;
+import java.util.Map;
+
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class Balance {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int inventorySlot;
 
-    private int product_Id;
+    private int location;
 
-    private int location_Id;
+    private int product;
 
     private double balance;
 }
