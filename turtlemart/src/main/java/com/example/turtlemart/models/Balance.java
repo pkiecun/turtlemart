@@ -19,5 +19,6 @@ public class Balance {
 
     private int product;
 
+
     private double balance;
 }
