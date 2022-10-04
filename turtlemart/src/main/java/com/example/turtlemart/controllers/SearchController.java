@@ -1,16 +1,13 @@
 package com.example.turtlemart.controllers;
 
-import com.example.turtlemart.models.PostCodeArray;
-import com.example.turtlemart.models.PostalCode;
+import com.example.turtlemart.models.Balance;
+import com.example.turtlemart.models.Location;
 import com.example.turtlemart.models.Result;
-import com.example.turtlemart.repos.BalanceRepo;
 import com.example.turtlemart.repos.LocationRepo;
 import com.example.turtlemart.services.SearchService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
@@ -18,14 +15,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.CharBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
@@ -40,10 +33,10 @@ public class SearchController {
 
         String actualSearch = search.get("body");
         if(search.get("zipCode") != null) {
-            int zipCode = Integer.parseInt(search.get("zipCode"));
-            int radius = Integer.parseInt(search.get("radius"));
+            String zipCode = search.get("zipCode");
+            String radius = search.get("radius");
 
-            URL url = new URL("http://api.geonames.org/findNearbyPostalCodesJSON?postalcode=" + zipCode + "&country=US&radius="+ radius + "&username=kikaniparth");
+            URL url = new URL("http://api.geonames.org/findNearbyPostalCodesJSON?postalcode=" + zipCode + "&country=US&maxRows=500&radius="+ radius + "&username=kikaniparth");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestProperty("Content-Type", "application/json");
             con.setRequestMethod("GET");
@@ -51,6 +44,7 @@ public class SearchController {
             con.setReadTimeout(5000);
             int status = con.getResponseCode();
             Reader streamReader = null;
+            List<String> allMatches = new ArrayList<>();
 
             if (status > 299) {
                 streamReader = new InputStreamReader(con.getErrorStream());
@@ -58,10 +52,7 @@ public class SearchController {
 
             } else {
                 streamReader = new InputStreamReader(con.getInputStream());
-                //System.out.println(streamReader.read(CharBuffer.wrap("postalCode")));
-                //LinkedHashMap<String, String[]> pc = om.readValue(con.getInputStream(), LinkedHashMap.class);
 
-                //System.out.println(pc);
             }
             BufferedReader in = new BufferedReader(
 
@@ -70,25 +61,35 @@ public class SearchController {
 
 
             String inputLine;
-            //PostCodeArray pc = new PostCodeArray(con.getInputStream());
             StringBuffer content = new StringBuffer();
             while ((inputLine = in.readLine()) != null) {
-
-                //PostalCode ps = new PostalCode(om.readValue());
-                //PostCodeArray pc = om.readValue(in.readLine(), PostCodeArray.class);
-                //System.out.println(pc);
                 content.append(inputLine);
+
+                Matcher m = Pattern.compile("([\"'])\\d{5}([\"'])")
+                        .matcher(inputLine);
+                while (m.find()) {
+                    allMatches.add(m.group().replaceAll("([\"'])", ""));
+                }
+                System.out.println(allMatches.toString());
+
             }
             in.close();
             System.out.println(content);
             con.disconnect();
+            List<Result> unfilteredMatches = ssv.search(actualSearch);
+            List<Result> finalMatches = new ArrayList<>();
+            for (Result filtered : unfilteredMatches) {
+                for(String match : allMatches){
+                    if(filtered.getZip_Code() == Integer.parseInt(match)){
+                        finalMatches.add(filtered);
+                    }
+                }
+            }
+            return ResponseEntity.ok(finalMatches);
+
         }
-        //search.replace("", "");
-
         System.out.println(actualSearch);
-        //String newSearch = search.substring(0,5);
 
-        //System.out.println(ssv.search(newSearch).toString());
         return ResponseEntity.ok(ssv.search(actualSearch));
     }
 
