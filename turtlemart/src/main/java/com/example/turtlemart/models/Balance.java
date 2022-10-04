@@ -10,6 +10,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Getter
 @Setter
+@Table(name = "BALANCE")
 public class Balance {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

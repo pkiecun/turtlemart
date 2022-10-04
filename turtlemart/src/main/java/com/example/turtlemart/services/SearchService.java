@@ -1,25 +1,15 @@
 package com.example.turtlemart.services;
 
-<<<<<<< HEAD
 import com.example.turtlemart.models.*;
-=======
-import com.example.turtlemart.models.Balance;
-import com.example.turtlemart.models.Product;
-import com.example.turtlemart.models.Result;
->>>>>>> origin/models
+
 import com.example.turtlemart.repos.BalanceRepo;
 import com.example.turtlemart.repos.LocationRepo;
 import com.example.turtlemart.repos.ProductRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-<<<<<<< HEAD
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-=======
-import java.util.List;
->>>>>>> origin/models
+
 
 @Service
 public class SearchService {
@@ -36,7 +26,7 @@ public class SearchService {
         this.lr = lr;
     }
 
-<<<<<<< HEAD
+
     public List<Result> search(String query){
         List<Product> items = pr.findAll();
         List<Product> identifiers = new ArrayList<>();
@@ -87,25 +77,6 @@ public class SearchService {
         //List<Location> available = new ArrayList<>();
         return results;
     }
-=======
-//    public List<Result> search(String query){
-//        List<Product> items = pr.findAll();
-//        List<Integer> identifiers = new ArrayList<>();
-//        for(Product item: items){
-//            if(item.getProduct().equalsIgnoreCase(query) || item.getDepartment().equalsIgnoreCase(query)){
-//                identifiers.add(item.getItem());
-//            }
-//        }
-//        List<Balance> stocks = br.findAll();
-//        for(Balance stock : stocks){
-//            for(Integer item: identifiers){
-//            if(){
-//
-//            }
-//            }
-//        }
-//        return null;
-//    }
->>>>>>> origin/models
+
 
 }
